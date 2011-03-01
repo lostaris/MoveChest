@@ -41,6 +41,8 @@ public class MoveChestBlockListener extends BlockListener {
 				if (plugin.isFromSet()) {
 					Block block = event.getBlock();
 					source = (Chest) block.getState();
+					
+					// copy the contents of the source chest
 					items = source.getInventory().getContents();
 					
 					player.sendMessage("copied chest");
@@ -71,17 +73,33 @@ public class MoveChestBlockListener extends BlockListener {
 						player.sendMessage("destination chest full, leaving some behind");
 					} catch (NullPointerException e){
 						// for when we can fit everything in the destination chest
+						
+						/* if a new itemstack is made here and added the correct amount is added
+						 * but if a itemstack from the array made from above is used it adds 2x as much
+						 * 
+						 * The below would work here inserting the correct amount.
+						 */
+						//destInven.addItem(new ItemStack(1, 1));
+						
+						// but this doubles the amount inserted
 						for (int i =0; i<items.length; i++) {
 							if (items[i].getType() != Material.AIR) {
+								//this doubles the amount it should add
 								destInven.addItem(items[i]);
+								//this prints the correct amount it should add
 								log.warning("pasted " + items[i].toString());
 							}
 						}
+						
+						//clear the source chest as we have copied from it
+						sourceInven.clear();
 					}
 
+					//update the chests with the new values
 					source.update();
 					destination.update();
 					
+					//change the copy flags to show we are done
 					plugin.setCopy(false);
 					plugin.setToSet(false);
 					player.sendMessage("moved contents of the chest.");
