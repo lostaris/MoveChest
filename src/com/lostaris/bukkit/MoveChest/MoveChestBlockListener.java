@@ -1,6 +1,5 @@
 package com.lostaris.bukkit.MoveChest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -83,10 +82,6 @@ public class MoveChestBlockListener extends BlockListener {
 					source.update();
 					destination.update();
 					
-					// we have done the paste, clear the copied values.
-					source = null;
-					destination = null;
-
 					plugin.setCopy(false);
 					plugin.setToSet(false);
 					player.sendMessage("moved contents of the chest.");
