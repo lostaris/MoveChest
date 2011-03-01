@@ -1,0 +1,8 @@
+name: MoveChest
+main: com.lostaris.bukkit.MoveChest.MoveChest
+version: 0.1
+commands:
+  mvchest:
+    description: uses one or more items to repair a tool or armour
+    aliases: rep
+    usage: |
