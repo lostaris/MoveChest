@@ -42,28 +42,36 @@ public class MoveChestBlockListener extends BlockListener {
 				if (plugin.isFromSet()) {
 					Block block = event.getBlock();
 					source = (Chest) block.getState();
-
 					items = source.getInventory().getContents();
+					
+					player.sendMessage("copied chest");
+					// flags to show we have copied
 					plugin.setFromSet(false);
 					plugin.setCopy(true);
-					player.sendMessage("copied chest");
-					source.update();
 					// pasting
 				} else if(plugin.isToSet()) {
 					Block block = event.getBlock();
 					destination = (Chest) block.getState();
 					Inventory destInven = destination.getInventory();
 					Inventory sourceInven = source.getInventory();
-
+					
+					/* This gives a null pointer exception if there wouldn't be any left over
+					 * Works fine if there would be any left over, but not if there isn't any left over
+					 * as the amounts moved double
+					 * eg pasting one sand would result in there being two sand
+					 */
 					try {
+						// for when we can't fit everything in the destination chest
+						// add to the destination chest and record what can't fit
 						HashMap<Integer, ItemStack>  leftOver = destInven.addItem(sourceInven.getContents());
 						sourceInven.clear();
+						// add the left over back to the source chest
 						for (Entry<Integer, ItemStack> value: leftOver.entrySet()) {
 							sourceInven.addItem(value.getValue());
 						}
 						player.sendMessage("destination chest full, leaving some behind");
 					} catch (NullPointerException e){
-
+						// for when we can fit everything in the destination chest
 						for (int i =0; i<items.length; i++) {
 							if (items[i].getType() != Material.AIR) {
 								destInven.addItem(items[i]);
@@ -74,6 +82,8 @@ public class MoveChestBlockListener extends BlockListener {
 
 					source.update();
 					destination.update();
+					
+					// we have done the paste, clear the copied values.
 					source = null;
 					destination = null;
 
