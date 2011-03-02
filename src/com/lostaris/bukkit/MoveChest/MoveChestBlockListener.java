@@ -1,5 +1,6 @@
 package com.lostaris.bukkit.MoveChest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -22,6 +23,7 @@ public class MoveChestBlockListener extends BlockListener {
 	Chest source;
 	Chest destination;
 	ItemStack items[];
+	ArrayList<ItemStack> sourceItems;
 
 	public MoveChestBlockListener(final MoveChest plugin) {
 		this.plugin = plugin;
@@ -41,9 +43,17 @@ public class MoveChestBlockListener extends BlockListener {
 				if (plugin.isFromSet()) {
 					Block block = event.getBlock();
 					source = (Chest) block.getState();
+					sourceItems = new ArrayList<ItemStack>();
 
 					// copy the contents of the source chest
 					items = source.getInventory().getContents();
+					for (ItemStack i : items) {
+						log.info("item: " + i.toString());
+						if (i.getType() != Material.AIR) {
+							//log.info("item: " + i.toString());
+							sourceItems.add(i);
+						}
+					}
 
 					player.sendMessage("copied chest");
 					// flags to show we have copied
@@ -64,10 +74,14 @@ public class MoveChestBlockListener extends BlockListener {
 
 					// for when we can't fit everything in the destination chest
 					// add to the destination chest and record what can't fit
-					HashMap<Integer, ItemStack>  leftOver; // = destInven.addItem(sourceInven.getContents());
+					HashMap<Integer, ItemStack>  leftOver = null;
+					try {
+						leftOver = destInven.addItem(sourceInven.getContents());
+					}catch (NullPointerException e) {
+						log.info("npe");
+					}
 					ItemStack[] items = sourceInven.getContents();
 					if (destInven.addItem(items).size() != 0) {
-						leftOver = destInven.addItem(sourceInven.getContents());
 						sourceInven.clear();
 						// add the left over back to the source chest
 						log.info("leftover amount= " +leftOver.size());
@@ -113,3 +127,4 @@ public class MoveChestBlockListener extends BlockListener {
 		}
 	}
 }
+
